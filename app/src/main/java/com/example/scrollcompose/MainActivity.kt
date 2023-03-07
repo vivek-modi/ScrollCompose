@@ -17,8 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -31,8 +30,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ScrollComposeTheme {
-                CollapsingTopAppBarStylingScreen()
-//                MoveText()
+//                CollapsingTopAppBarStylingScreen()
+                MoveText()
             }
         }
     }
@@ -138,14 +137,22 @@ fun MoveText() {
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 16.dp)
         ) {
-            Column(modifier = Modifier
-                .onGloballyPositioned { coordinates ->
-                    with(density) {
-                        columnHeightDp = coordinates.size.height.toDp()
-                    }
+            Column(
+                modifier =
+                if (columnHeightDp != 0.dp) {
+                    Modifier
+                        .height(heightInDp)
+                } else {
+                    Modifier
+                        .onSizeChanged {
+                            with(density) {
+                                columnHeightDp = it.height.toDp()
+                            }
+                        }
+                        .wrapContentHeight()
                 }
-                .requiredHeight(heightInDp)
-                .background(Color.LightGray)) {
+                    .background(Color.LightGray)
+            ) {
                 Image(
                     modifier = Modifier.padding(top = iconOffsetAnimation),
                     alpha = viewAlpha,
