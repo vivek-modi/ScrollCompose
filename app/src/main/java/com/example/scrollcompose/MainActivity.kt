@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -40,30 +41,48 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CollapsingTopAppBarStylingScreen() {
-    val context = LocalContext.current
+    var isBackDropAnimationStarts by remember { mutableStateOf(false) }
+    val iconOffsetAnimation: Dp by animateDpAsState(
+        if (!isBackDropAnimationStarts) 13.dp else 0.dp, tween(1000)
+    )
+    val textOffsetAnimation: Dp by animateDpAsState(
+        if (!isBackDropAnimationStarts) 6.dp else 0.dp, tween(1000)
+    )
+    val viewAlpha: Float by animateFloatAsState(
+        targetValue = if (!isBackDropAnimationStarts) 1f else 0f, animationSpec = tween(
+            durationMillis = 1000,
+        )
+    )
     val scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed)
-    BackdropScaffold(scaffoldState = scaffoldState,
+    BackdropScaffold(
+        scaffoldState = scaffoldState,
         appBar = {},
         persistentAppBar = false,
+        peekHeight = 0.dp,
         backLayerContent = {
             Column(
-                modifier = Modifier.padding(
-                    top = 20.dp, start = 16.dp, bottom = 24.dp
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 16.dp, top = 16.dp, bottom = 10.dp
+                    ),
             ) {
-                Icon(
+                Image(
+                    modifier = Modifier.padding(top = iconOffsetAnimation),
+                    alpha = viewAlpha,
                     imageVector = Icons.Default.ShoppingCart,
-                    tint = Color.White,
+                    colorFilter = ColorFilter.tint(color = Color.White),
                     contentDescription = null,
                 )
                 Text(
-                    text = "Hello!! How are you?",
-                    fontSize = 24.sp,
-                    color = Color.White,
+                    modifier = Modifier.padding(top = textOffsetAnimation),
+                    text = "Hello, Anna",
+                    fontSize = 20.sp,
+                    color = Color.White.copy(alpha = viewAlpha),
                 )
             }
         },
-        backLayerBackgroundColor = Color.Green,
+        backLayerBackgroundColor = Color.DarkGray,
         frontLayerBackgroundColor = Color.White,
         frontLayerScrimColor = Color.Transparent,
         frontLayerContent = {
