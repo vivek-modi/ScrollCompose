@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +30,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ScrollComposeTheme {
 //                CollapsingTopAppBarStylingScreen()
-                MoveText()
+                MoveTextView()
             }
         }
     }
@@ -103,10 +102,8 @@ fun CollapsingTopAppBarStylingScreen() {
         })
 }
 
-@Preview(showBackground = true)
 @Composable
-fun MoveText() {
-    val density = LocalDensity.current
+fun MoveTextView() {
     var columnHeightDp by remember {
         mutableStateOf(0.dp)
     }
@@ -131,6 +128,35 @@ fun MoveText() {
             durationMillis = 1000,
         )
     )
+
+    MoveTextStateLess(
+        columnHeightDp,
+        onColumnHeightDp = {
+            columnHeightDp = it
+        },
+        heightInDp,
+        iconOffsetAnimation,
+        viewAlpha,
+        textOffsetAnimation,
+        visible,
+        onVisibleChange = {
+            visible = it
+        }
+    )
+}
+
+@Composable
+fun MoveTextStateLess(
+    columnHeightDp: Dp,
+    onColumnHeightDp: (Dp) -> Unit,
+    heightInDp: Dp,
+    iconOffsetAnimation: Dp,
+    viewAlpha: Float,
+    textOffsetAnimation: Dp,
+    visible: Boolean,
+    onVisibleChange: (Boolean) -> Unit,
+) {
+    val density = LocalDensity.current
     ScrollComposeTheme {
         Column(
             modifier = Modifier
@@ -146,12 +172,11 @@ fun MoveText() {
                     Modifier
                         .onSizeChanged {
                             with(density) {
-                                columnHeightDp = it.height.toDp()
+                                onColumnHeightDp(it.height.toDp())
                             }
                         }
                         .wrapContentHeight()
-                }
-                    .background(Color.LightGray)
+                }.background(Color.LightGray)
             ) {
                 Image(
                     modifier = Modifier.padding(top = iconOffsetAnimation),
@@ -169,7 +194,7 @@ fun MoveText() {
             Button(
                 modifier = Modifier.padding(top = 10.dp),
                 onClick = {
-                    visible = !visible
+                    onVisibleChange(!visible)
                 },
             ) {
                 Text(text = "Move Text")
