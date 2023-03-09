@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
@@ -48,11 +49,11 @@ fun MoveTextView() {
     )
 
     MoveTextStateLess(
-        columnHeightDp,
+        { columnHeightDp },
         onColumnHeightDp = {
             columnHeightDp = it
         },
-        heightInDp,
+        { heightInDp },
         iconOffsetAnimation,
         viewAlpha,
         textOffsetAnimation,
@@ -65,9 +66,9 @@ fun MoveTextView() {
 
 @Composable
 fun MoveTextStateLess(
-    columnHeightDp: Dp,
+    columnHeightDp: () -> Dp,
     onColumnHeightDp: (Dp) -> Unit,
-    heightInDp: Dp,
+    heightInDp: () -> Dp,
     iconOffsetAnimation: Dp,
     viewAlpha: Float,
     textOffsetAnimation: Dp,
@@ -83,9 +84,9 @@ fun MoveTextStateLess(
         ) {
             Column(
                 modifier =
-                if (columnHeightDp != 0.dp) {
+                if (columnHeightDp() != 0.dp) {
                     Modifier
-                        .height(heightInDp)
+                        .height(heightInDp())
                 } else {
                     Modifier
                         .onSizeChanged {
@@ -97,13 +98,13 @@ fun MoveTextStateLess(
                 }.background(Color.LightGray)
             ) {
                 Image(
-                    modifier = Modifier.padding(top = iconOffsetAnimation),
+                    modifier = Modifier.graphicsLayer { translationY = iconOffsetAnimation.toPx() },
                     alpha = viewAlpha,
                     imageVector = Icons.Default.ShoppingCart,
                     contentDescription = null,
                 )
                 Text(
-                    modifier = Modifier.padding(top = textOffsetAnimation),
+                    modifier = Modifier.graphicsLayer { translationY = textOffsetAnimation.toPx() },
                     text = "Hello, Anna",
                     fontSize = 20.sp,
                     color = Color.Black.copy(alpha = viewAlpha),

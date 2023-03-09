@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ScrollComposeTheme {
 //                CollapsingTopAppBarStylingScreen()
-//                MoveTextView()
+                MoveTextView()
             }
         }
     }
